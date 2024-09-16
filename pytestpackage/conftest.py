@@ -10,13 +10,19 @@ def set_up(): # method level setup (default scope)
 
 # scope -> "module" (default), "class", "session" ... # module setup (i.e: Open browser > Quit browser)
 @pytest.fixture(scope="class")
-def onetime_setup(browser, os_type):
+def onetime_setup(request, browser, os_type):
     print("\n========== Run one time setup (conftest.py) ==========")  # before method
     if browser.lower() == "firefox":
+        value = 10
         print(">>> Browser = Firefox")
     else:
+        value = 0
         print(">>> Browser = Chrome")
-    yield
+
+    if request.cls is not None:
+        request.cls.value = value  # add value to class attribute
+
+    yield value # return value
     print("\n========== Run one time teardown (conftest.py) ==========")  # after method
 
 
